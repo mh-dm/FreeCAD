@@ -8083,7 +8083,7 @@ Part::Geometry* projectLine(const BRepAdaptor_Curve& curve, const Handle(Geom_Pl
     invPlm.multVec(p1, p1);
     invPlm.multVec(p2, p2);
 
-    if (Base::Distance(p1, p2) < Precision::Confusion()) {
+    if (Base::DistanceP2(p1, p2) < Precision::SquareConfusion()) {
         Base::Vector3d p = (p1 + p2) / 2;
         Part::GeomPoint* point = new Part::GeomPoint(p);
         GeometryFacade::setConstruction(point, true);
@@ -8307,7 +8307,7 @@ static Part::Geometry *fitArcs(std::vector<std::unique_ptr<Part::Geometry> > &ar
     }
     if (radius == 0.0)
         return nullptr;
-    if (P1.SquareDistance(P2) < Precision::Confusion()) {
+    if (P1.SquareDistance(P2) < Precision::SquareConfusion()) {
         Part::GeomCircle* circle = new Part::GeomCircle();
         circle->setCenter(center);
         circle->setRadius(radius);
@@ -8532,7 +8532,7 @@ void SketchObject::rebuildExternalGeometry(bool defining, bool addIntersection)
                     //
                     // if (vec1.IsParallel(vec2, Precision::Confusion()))
                     if (fabs(circle.Radius() - minorRadius) < Precision::Confusion()) {
-                        if (firstPoint.SquareDistance(lastPoint) < Precision::Confusion()) {
+                        if (firstPoint.SquareDistance(lastPoint) < Precision::SquareConfusion()) {
                             Part::GeomCircle* gCircle = new Part::GeomCircle();
                             gCircle->setRadius(circle.Radius());
                             cnt.Transform(mov);
@@ -8558,7 +8558,7 @@ void SketchObject::rebuildExternalGeometry(bool defining, bool addIntersection)
                     }
                     else if (minorRadius < Precision::Confusion()) {
                         //   projection is a line
-                        if (firstPoint.SquareDistance(lastPoint) >= Precision::Confusion()) {
+                        if (firstPoint.SquareDistance(lastPoint) >= Precision::SquareConfusion()) {
                             //   Arc projected to be a a line
                             done = false; // will handle later by projectEdgeToLine()
                         } else {
@@ -8598,7 +8598,7 @@ void SketchObject::rebuildExternalGeometry(bool defining, bool addIntersection)
                         gp_Ax2 refFrameEllipse(gp_Pnt(gp_XYZ(p[0], p[1], p[2])), gp_Vec(0, 0, 1), vecMajorAxis);  // NB: force normal of ellipse to be normal of sketch's plane.
                         Handle(Geom_Ellipse) curve = new Geom_Ellipse(refFrameEllipse, circle.Radius(), minorRadius);
 
-                        if (firstPoint.SquareDistance(lastPoint) < Precision::Confusion()) {
+                        if (firstPoint.SquareDistance(lastPoint) < Precision::SquareConfusion()) {
                             Part::GeomEllipse* ellipse = new Part::GeomEllipse();
                             ellipse->setHandle(curve);
                             GeometryFacade::setConstruction(ellipse, true);
@@ -8680,7 +8680,7 @@ void SketchObject::rebuildExternalGeometry(bool defining, bool addIntersection)
 
                     if ((RDest - rDest) < (double) Precision::Confusion()) {  // projection is a circle
                         Handle(Geom_Circle) hCircle = new Geom_Circle(destCurveAx2, 0.5 * (rDest + RDest));
-                        if (firstPoint.SquareDistance(lastPoint) < Precision::Confusion()) {
+                        if (firstPoint.SquareDistance(lastPoint) < Precision::SquareConfusion()) {
                             Part::GeomCircle* circle = new Part::GeomCircle();
                             circle->setHandle(hCircle);
                             GeometryFacade::setConstruction(circle, true);
@@ -8700,7 +8700,7 @@ void SketchObject::rebuildExternalGeometry(bool defining, bool addIntersection)
                     else {
                         if (destAxisMinor.SquareMagnitude() < Precision::SquareConfusion()) {
                             // minor axis is practically zero, means we are projecting to a line
-                            if (firstPoint.SquareDistance(lastPoint) >= Precision::Confusion()) {
+                            if (firstPoint.SquareDistance(lastPoint) >= Precision::SquareConfusion()) {
                                 done = false; // non closed case will be handled later by projectEdgeToLine()
                             } else {
                                 gp_Vec start = gp_Vec(destCenter.XYZ()) + destAxisMajor;
@@ -8718,7 +8718,7 @@ void SketchObject::rebuildExternalGeometry(bool defining, bool addIntersection)
                             elipsDest.SetMajorRadius(destAxisMajor.Magnitude());
                             elipsDest.SetMinorRadius(destAxisMinor.Magnitude());
                             Handle(Geom_Ellipse) curve = new Geom_Ellipse(elipsDest);
-                            if (firstPoint.SquareDistance(lastPoint) < Precision::Confusion()) {
+                            if (firstPoint.SquareDistance(lastPoint) < Precision::SquareConfusion()) {
                                 Part::GeomEllipse* ellipse = new Part::GeomEllipse();
                                 ellipse->setHandle(curve);
                                 GeometryFacade::setConstruction(ellipse, true);
@@ -8814,7 +8814,7 @@ void SketchObject::rebuildExternalGeometry(bool defining, bool addIntersection)
                             Base::Vector3d p1(P1.X(),P1.Y(),P1.Z());
                             Base::Vector3d p2(P2.X(),P2.Y(),P2.Z());
 
-                            if (Base::Distance(p1,p2) < Precision::Confusion()) {
+                            if (Base::DistanceP2(p1,p2) < Precision::SquareConfusion()) {
                                 Base::Vector3d p = (p1 + p2) / 2;
                                 Part::GeomPoint* point = new Part::GeomPoint(p);
                                 GeometryFacade::setConstruction(point, true);
@@ -8831,7 +8831,7 @@ void SketchObject::rebuildExternalGeometry(bool defining, bool addIntersection)
                             gp_Circ c = projCurve.Circle();
                             gp_Pnt p = c.Location();
 
-                            if (P1.SquareDistance(P2) < Precision::Confusion()) {
+                            if (P1.SquareDistance(P2) < Precision::SquareConfusion()) {
                                 Part::GeomCircle* circle = new Part::GeomCircle();
                                 circle->setRadius(c.Radius());
                                 circle->setCenter(Base::Vector3d(p.X(),p.Y(),p.Z()));
@@ -8921,7 +8921,7 @@ void SketchObject::rebuildExternalGeometry(bool defining, bool addIntersection)
                             gp_Dir xdir = e.XAxis().Direction();
                             gp_Ax2 xdirref(p, normal);
 
-                            if (P1.SquareDistance(P2) < Precision::Confusion()) {
+                            if (P1.SquareDistance(P2) < Precision::SquareConfusion()) {
                                 Part::GeomHyperbola* hyperbola = new Part::GeomHyperbola();
                                 hyperbola->setMajorRadius(e.MajorRadius());
                                 hyperbola->setMinorRadius(e.MinorRadius());
@@ -8951,7 +8951,7 @@ void SketchObject::rebuildExternalGeometry(bool defining, bool addIntersection)
                             gp_Dir xdir = e.XAxis().Direction();
                             gp_Ax2 xdirref(p, normal);
 
-                            if (P1.SquareDistance(P2) < Precision::Confusion()) {
+                            if (P1.SquareDistance(P2) < Precision::SquareConfusion()) {
                                 Part::GeomParabola* parabola = new Part::GeomParabola();
                                 parabola->setFocal(e.Focal());
                                 parabola->setCenter(Base::Vector3d(p.X(),p.Y(),p.Z()));
@@ -8981,7 +8981,7 @@ void SketchObject::rebuildExternalGeometry(bool defining, bool addIntersection)
                             gp_Dir normal = gp_Dir(0,0,1);
                             gp_Ax2 xdirref(p, normal);
 
-                            if (P1.SquareDistance(P2) < Precision::Confusion()) {
+                            if (P1.SquareDistance(P2) < Precision::SquareConfusion()) {
                                 Part::GeomEllipse* ellipse = new Part::GeomEllipse();
                                 Handle(Geom_Ellipse) curve = new Geom_Ellipse(e);
                                 ellipse->setHandle(curve);
